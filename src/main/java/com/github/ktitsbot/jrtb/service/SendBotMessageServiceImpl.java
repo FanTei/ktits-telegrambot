@@ -7,9 +7,10 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Service
-public class SendBotMessageServiceImpl implements SendBotMessageService{
+public class SendBotMessageServiceImpl  implements SendBotMessageService{
     private final KtitsTelegramBot bot;
 
+    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     public SendBotMessageServiceImpl(KtitsTelegramBot bot) {
         this.bot = bot;
