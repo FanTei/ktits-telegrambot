@@ -1,0 +1,9 @@
+com\github\ktitsbot\jrtb\command\StartCommandTest.class
+com\github\ktitsbot\jrtb\KtitsTelegramBotApplicationTests.class
+com\github\ktitsbot\jrtb\command\HelpCommandTest.class
+com\github\ktitsbot\jrtb\command\UnknownCommandTest.class
+com\github\ktitsbot\jrtb\service\SendBotMessageServiceTest.class
+com\github\ktitsbot\jrtb\command\StopCommandTest.class
+com\github\ktitsbot\jrtb\command\NoCommandTest.class
+com\github\ktitsbot\jrtb\command\CommandContainerTest.class
+com\github\ktitsbot\jrtb\command\AbstracCommandTest.class

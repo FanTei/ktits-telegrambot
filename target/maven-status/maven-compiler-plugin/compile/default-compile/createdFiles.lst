@@ -1,0 +1,12 @@
+com\github\ktitsbot\jrtb\KtitsTelegramBotApplication.class
+com\github\ktitsbot\jrtb\command\UnknownCommand.class
+com\github\ktitsbot\jrtb\command\Command.class
+com\github\ktitsbot\jrtb\command\NoCommand.class
+com\github\ktitsbot\jrtb\command\HelpCommand.class
+com\github\ktitsbot\jrtb\command\StartCommand.class
+com\github\ktitsbot\jrtb\command\CommandName.class
+com\github\ktitsbot\jrtb\service\SendBotMessageServiceImpl.class
+com\github\ktitsbot\jrtb\bot\KtitsTelegramBot.class
+com\github\ktitsbot\jrtb\command\CommandContainer.class
+com\github\ktitsbot\jrtb\command\StopCommand.class
+com\github\ktitsbot\jrtb\service\SendBotMessageService.class
