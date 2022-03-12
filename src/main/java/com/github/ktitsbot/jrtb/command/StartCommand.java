@@ -15,7 +15,4 @@ public class StartCommand implements Command{
     public void execute(Update update) {
             sendBotMessageService.sendMessage(update.getMessage().getChatId().toString(),START_MESSAGE);
     }
-
-
-
 }
