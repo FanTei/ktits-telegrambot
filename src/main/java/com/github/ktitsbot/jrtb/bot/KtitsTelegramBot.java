@@ -44,7 +44,7 @@ public class KtitsTelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "5240809296:AAG_JDxNL67GI4xYnNWt-_agGgJnILnSQC4";
+        return token;
     }
 
 }

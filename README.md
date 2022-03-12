@@ -13,3 +13,16 @@ Authors — FanTei;
 
 RELEASE_NOTES — файл, в котором записываются все изменения для новых версий. Хорошая практика вынести это в отдельный документ, а в README хранить ссылку для перехода;
 
+## Deployment
+Deployment process as easy as possible:
+Required software:
+- terminal for running bash scripts
+- docker
+- docker-compose
+
+to deploy application, switch to needed branch and run bash script:
+
+$ bash start.sh ${bot_username} ${bot_token}
+
+That's all.
+
