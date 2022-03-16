@@ -29,7 +29,6 @@ public class TelegramUserRepositoryIT {
         //then
         Assertions.assertEquals(5, users.size());
     }
-
     @Sql(scripts = {"/sql/clearDbs.sql"})
     @Test
     public void shouldProperlySaveTelegramUser() {
