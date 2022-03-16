@@ -7,4 +7,7 @@
 
 ## 0.3.0-SNAPSHOT
 
-*   added deployment process to the project
+* added deployment process to the project
+## 0.4.0-SNAPSHOT
+
+* KSTB-4: added repository layer.
