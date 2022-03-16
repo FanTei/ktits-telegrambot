@@ -17,7 +17,6 @@ jobs:
     - name: Set up MySQL
       uses: mirromutth/mysql-action
       with:
-        mysql version: 8.0.28
         mysql database: 'dev_kstb_db'
         mysql root password: '0520'
         mysql user: 'kstb_db'
