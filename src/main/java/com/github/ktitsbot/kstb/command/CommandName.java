@@ -5,7 +5,9 @@ public enum CommandName {
     STOP("/stop"),
     HELP("/help"),
     NO("/no"),
-    STAT("/stat");
+    STAT("/stat"),
+    GROUP("/group"),
+    DAY("/day");
     private final String commandName;
 
     CommandName(String commandName) {

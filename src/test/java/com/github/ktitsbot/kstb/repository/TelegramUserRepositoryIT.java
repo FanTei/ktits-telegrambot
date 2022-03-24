@@ -34,12 +34,12 @@ public class TelegramUserRepositoryIT {
     public void shouldProperlySaveTelegramUser() {
         //given
         TelegramUser telegramUser = new TelegramUser();
-        telegramUser.setCharId("1234567890");
+        telegramUser.setChatId("1234567890");
         telegramUser.setActive(false);
         telegramUserRepository.save(telegramUser);
 
         //when
-        Optional<TelegramUser> saved = telegramUserRepository.findById(telegramUser.getCharId());
+        Optional<TelegramUser> saved = telegramUserRepository.findById(telegramUser.getChatId());
 
         //then
         Assertions.assertTrue(saved.isPresent());
