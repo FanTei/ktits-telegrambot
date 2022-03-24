@@ -15,5 +15,3 @@ INSERT into day_of_week(id, name_day)
 VALUES (4, 'Friday');
 INSERT into day_of_week(id, name_day)
 VALUES (5, 'Saturday');
-INSERT into day_of_week(id, name_day)
-VALUES (6, 'Sunday');
