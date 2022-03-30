@@ -34,8 +34,8 @@ public class TelegramUserServiceImpl implements TelegramUserService {
         return telegramUserRepository.findById(chatId);
     }
 
-    public boolean isActiveUser(String chaId) {
+    public boolean isActiveUser(String chatId) {
         List<String> listChatId = this.retrieveAllActiveUsers().stream().map(u -> u.getChatId().toString()).toList();
-        return listChatId.contains(chaId);
+        return listChatId.contains(chatId);
     }
 }

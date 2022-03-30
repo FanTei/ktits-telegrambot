@@ -17,21 +17,24 @@ public enum DayOfWeek {
         this.id = id;
     }
 
-    public static DayOfWeek getDayOfWeekByRow(int row,int startRow) {
+    public static DayOfWeek getByRow(int row, int startRow) {
         DayOfWeek result;
-        if (row > startRow && row <= (startRow+=6))
-            //start row> <start +7
+        if (row > startRow && row <= (startRow += 8))
             result = Monday;
-        else if (row > startRow && row <= (startRow+=6))
+        else if (row > startRow && row <= (startRow += 8))
             result = Tuesday;
-        else if (row > startRow && row < (startRow+=6))
+        else if (row > startRow && row < (startRow += 8))
             result = Wednesday;
-        else if (row > startRow && row < (startRow+=6))
+        else if (row > startRow && row < (startRow += 8))
             result = Thursday;
-        else if (row > startRow && row < (startRow+=6))
+        else if (row > startRow && row < (startRow += 8))
             result = Friday;
         else
             result = Saturday;
         return result;
+    }
+
+    public static DayOfWeek getById(int id) {
+        return DayOfWeek.values()[id];
     }
 }

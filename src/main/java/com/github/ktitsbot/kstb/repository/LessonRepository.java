@@ -8,6 +8,4 @@ import java.util.List;
 import java.util.Map;
 
 public interface LessonRepository extends JpaRepository<Lesson,Integer> {
-    List<Lesson> findByIdDayOfWikAndIdGroup(int idDayOfWik, int idGroup);
-
-}
+    List<Lesson> findByIdDayOfWikAndIdGroup(int idDayOfWik, int idGroup);}

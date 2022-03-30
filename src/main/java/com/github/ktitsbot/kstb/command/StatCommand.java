@@ -20,9 +20,6 @@ public class StatCommand implements Command {
 
     @Override
     public void execute(Update update) {
-        Calendar calendar = Calendar.getInstance();
-
-
         int activeUserCount = telegramUserService.retrieveAllActiveUsers().size();
         sendBotMessageService.sendMessage(update.getMessage().getChatId().toString(), String.format(STAT_MESSAGE, activeUserCount));
     }

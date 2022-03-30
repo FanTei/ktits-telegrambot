@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @Table(name = "lesson")
 @NoArgsConstructor
 public class Lesson {
-    private static int id;
+    private static int id=1;
     @Id
     private int idLesson;
     @Column(name = "id_group")

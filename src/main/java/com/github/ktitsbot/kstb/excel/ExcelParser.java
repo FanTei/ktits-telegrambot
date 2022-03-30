@@ -9,8 +9,13 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ExcelParser {
     private final List<StudentGroup> studentGroups;
@@ -25,6 +30,11 @@ public class ExcelParser {
         return lessons;
     }
 
+    public void clearLists() {
+        studentGroups.clear();
+        lessons.clear();
+    }
+
     public ExcelParser() {
         studentGroups = new ArrayList<>();
         lessons = new ArrayList<>();
@@ -32,10 +42,13 @@ public class ExcelParser {
     }
 
     public void parse() {
-        try (FileInputStream inputStream = new FileInputStream("C:\\Users\\123\\Downloads\\test.xlsx")) {
-            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-            for (int i = 1; i < workbook.getNumberOfSheets(); i++) {
-                getGroups(workbook.getSheetAt(i));
+        try (Stream<Path> paths = Files.walk(Paths.get("C:\\Users\\123\\Desktop\\lessons"))) {
+            List<Path> list = paths.filter(Files::isRegularFile).toList();
+            for (Path path : list) {
+                XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(path.toString()));
+                for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                    getGroups(workbook.getSheetAt(i));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -44,9 +57,12 @@ public class ExcelParser {
 
     private void getLessonsByGroup(int column, XSSFSheet sheet) {
         for (int c = column - 1; c < column; c++) {
-            int lessonNumber = 1 ;
-            for (int r = getStartRowIndex(sheet)+1; r < getStopRowIndex(sheet); r++) {
-                Lesson lesson = getLesson(sheet.getRow(r), column, lessonNumber);
+            int lessonNumber = 1;
+            int maxLessons = 0;
+            for (int r = getStartRowIndex(sheet) + 1; r < getStopRowIndex(sheet); r++) {
+                Row row = sheet.getRow(r);
+                Lesson lesson = getLesson(row, column, lessonNumber);
+                getMaxCountLessons(r, sheet);
                 if (lesson != null) {
                     lessons.add(lesson);
                 }
@@ -57,14 +73,35 @@ public class ExcelParser {
         }
     }
 
-    private void getGroups(XSSFSheet sheet) {
+    private int getMaxCountLessons(int row, XSSFSheet sheet) {
+        int[] numbers = new int[10];
+        for (int n : numbers) {
+            for (int r = row; r < row + 9 || r < getStopRowIndex(sheet)-2; r++) {
+                Row row1 = sheet.getRow(r);
+                n= Integer.parseInt(row1.getCell(1).toString().substring(0,1));
+
+            }
+        }
+
+        return Arrays.stream(numbers).max().getAsInt();
+    }
+
+    private void getGroups(XSSFSheet sheet) throws InterruptedException {
         int startSheetColumn = getStartColumnIndex(sheet);
         int stopSheetColumn = getStopColumnIndex(sheet);
         startSheetRow = getStartRowIndex(sheet);
         Row row = sheet.getRow(startSheetRow);
+        Thread.sleep(100);
         for (int column = startSheetColumn; column < stopSheetColumn; column += 3) {
-            int groupNumber = Integer.parseInt(row.getCell(column).getStringCellValue().split("\n")[0].split(" ")[0]);
-            studentGroups.add(new StudentGroup(groupNumber));
+            String cellValue = row.getCell(column).getStringCellValue().split("\n")[0].split(" ")[0];
+            String[] split = cellValue.split("-");
+            int groupNumber;
+            if (split.length > 1)
+                groupNumber = (Integer.parseInt(split[0]));
+            else
+                groupNumber = Integer.parseInt(cellValue);
+            int course = Integer.parseInt(Integer.toString(groupNumber).substring(0, 1));
+            studentGroups.add(new StudentGroup(groupNumber, course));
             getLessonsByGroup(column, sheet);
         }
     }
@@ -87,16 +124,24 @@ public class ExcelParser {
         if (cabinetStr.equals("с/з"))
             return 0;
         String[] split = cabinetStr.split("\n");
-        if (split.length > 1)
-            return (int) Math.floor(Float.parseFloat(split[1]));
-        return (int) Math.floor(Float.parseFloat(cabinetStr));
+        try {
+            if (split.length > 1)
+                return (int) Math.floor(Float.parseFloat(split[1]));
+            else
+                return (int) Math.floor(Float.parseFloat(cabinetStr));
+        } catch (Exception e) {
+            return -1;
+        }
     }
+
     private Lesson getLesson(Row row, int column, int lessonNumber) {
         String lessonName = getLessonName(row.getCell(column));
         if (lessonName == null)
             return null;
         int cabinet = getCabinet(row.getCell(column - 1));
-        DayOfWeek dayOfWeek = DayOfWeek.getDayOfWeekByRow(row.getRowNum(), startSheetRow);
+        if (cabinet == -1)
+            return null;
+        DayOfWeek dayOfWeek = DayOfWeek.getByRow(row.getRowNum(), startSheetRow);
         return new Lesson(studentGroups.get(studentGroups.size() - 1).getGroupId(),
                 dayOfWeek.getId(), lessonName, cabinet, lessonNumber);
     }
