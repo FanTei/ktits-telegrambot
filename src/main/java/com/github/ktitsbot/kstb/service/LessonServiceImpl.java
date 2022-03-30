@@ -27,14 +27,12 @@ public class LessonServiceImpl implements LessonService {
     public String lessonsToString(List<Lesson> lessons) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Lesson lesson : lessons) {
-            System.out.println(lesson);
             int lessonNumber = lesson.getLessonNumber();
             String lessonName = lesson.getLessonName();
             int lessonCabinetNumber = lesson.getCabinetNumber();
             stringBuilder.append(lesson.getLessonNumber()).append(")").append(lessonName).append(" ").append(lessonCabinetNumber);
             stringBuilder.append("\n");
         }
-
-        return "<b>"+stringBuilder.toString()+"</b>";
+        return "<b>" + stringBuilder.toString() + "</b>";
     }
 }

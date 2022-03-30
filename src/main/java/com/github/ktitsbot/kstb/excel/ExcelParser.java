@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -58,32 +59,14 @@ public class ExcelParser {
     private void getLessonsByGroup(int column, XSSFSheet sheet) {
         for (int c = column - 1; c < column; c++) {
             int lessonNumber = 1;
-            int maxLessons = 0;
-            for (int r = getStartRowIndex(sheet) + 1; r < getStopRowIndex(sheet); r++) {
+            for (int r = getStartRowIndex(sheet) + 1; r < getStopRowIndex(sheet) - 2; r++) {
                 Row row = sheet.getRow(r);
                 Lesson lesson = getLesson(row, column, lessonNumber);
-                getMaxCountLessons(r, sheet);
                 if (lesson != null) {
                     lessons.add(lesson);
                 }
-                if (lessonNumber == 6)
-                    lessonNumber = 0;
-                lessonNumber++;
             }
         }
-    }
-
-    private int getMaxCountLessons(int row, XSSFSheet sheet) {
-        int[] numbers = new int[10];
-        for (int n : numbers) {
-            for (int r = row; r < row + 9 || r < getStopRowIndex(sheet)-2; r++) {
-                Row row1 = sheet.getRow(r);
-                n= Integer.parseInt(row1.getCell(1).toString().substring(0,1));
-
-            }
-        }
-
-        return Arrays.stream(numbers).max().getAsInt();
     }
 
     private void getGroups(XSSFSheet sheet) throws InterruptedException {
@@ -108,42 +91,57 @@ public class ExcelParser {
 
     private String getLessonName(Cell cell) {
         String lessonName = cell.getStringCellValue();
-        String[] split = lessonName.split("\n");
-        if (split.length > 1)
-            return split[1];
         if (lessonName.equals(""))
             return null;
-        else
-            return lessonName;
+        String[] split = lessonName.split("\n");
+        if (split.length > 1) {
+            lessonName = split[0];
+        }
+        if (lessonName.chars().anyMatch(c -> c == (int) '_')) {
+            return null;
+        }
+        return lessonName;
     }
 
     private int getCabinet(Cell cell) {
+        int cabinet = -1;
         String cabinetStr = cell.toString();
-        if (cabinetStr.equals(""))
-            return -1;
-        if (cabinetStr.equals("с/з"))
-            return 0;
         String[] split = cabinetStr.split("\n");
         try {
-            if (split.length > 1)
-                return (int) Math.floor(Float.parseFloat(split[1]));
-            else
-                return (int) Math.floor(Float.parseFloat(cabinetStr));
+            if (split.length > 1) {
+                if (split[0].equals("с/з") || split[0].equals("точка кипения"))
+                    cabinet = 0;
+                else
+                    cabinet = (int) Math.floor(Float.parseFloat(split[1]));
+            } else
+                cabinet = (int) Math.floor(Float.parseFloat(cabinetStr));
         } catch (Exception e) {
             return -1;
         }
+        return cabinet;
+//        if (cabinetStr.equals(""))
+//            return -1;
+//        if (cabinetStr.equals("с/з") || cabinetStr.equals("точка кипения"))
+//            return 0;
     }
 
     private Lesson getLesson(Row row, int column, int lessonNumber) {
         String lessonName = getLessonName(row.getCell(column));
-        if (lessonName == null)
-            return null;
         int cabinet = getCabinet(row.getCell(column - 1));
-        if (cabinet == -1)
+        if (lessonName == null || cabinet == -1)
             return null;
+        int number = getLessonNumber(row.getCell(1));
         DayOfWeek dayOfWeek = DayOfWeek.getByRow(row.getRowNum(), startSheetRow);
         return new Lesson(studentGroups.get(studentGroups.size() - 1).getGroupId(),
-                dayOfWeek.getId(), lessonName, cabinet, lessonNumber);
+                dayOfWeek.getId(), lessonName, cabinet, number);
+    }
+
+    private int getLessonNumber(Cell cell) {
+        String cellValue = cell.toString();
+        if (!cellValue.equals("")) {
+            return Integer.parseInt(cellValue.substring(0, 1));
+        }
+        return -100;
     }
 
     private int getStartRowIndex(Sheet sheet) {
