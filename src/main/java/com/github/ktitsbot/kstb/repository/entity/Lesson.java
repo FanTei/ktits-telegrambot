@@ -23,11 +23,11 @@ public class Lesson {
     @Column(name = "lesson_name")
     private String lessonName;
     @Column(name = "lesson_cabinet")
-    private int cabinetNumber;
+    private String cabinetNumber;
     @Column(name = "lesson_number")
     private int lessonNumber;
 
-    public Lesson(int idGroup, int idDayOfWik, String lessonName, int cabinetNumber, int lessonNumber) {
+    public Lesson(int idGroup, int idDayOfWik, String lessonName, String cabinetNumber, int lessonNumber) {
         this.idGroup = idGroup;
         this.idDayOfWik = idDayOfWik;
         this.lessonName = lessonName;

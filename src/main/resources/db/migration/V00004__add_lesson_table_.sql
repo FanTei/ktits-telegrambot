@@ -5,7 +5,7 @@ CREATE TABLE lesson
     id_group       int,
     id_day_of_week int,
     lesson_name    varchar(300),
-    lesson_cabinet int,
+    lesson_cabinet varchar(100),
     lesson_number  int
 );
 TRUNCATE TABLE student_group;

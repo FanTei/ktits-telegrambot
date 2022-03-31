@@ -12,16 +12,16 @@ import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class ExcelParser {
     private final List<StudentGroup> studentGroups;
     private final List<Lesson> lessons;
     private int startSheetRow = 0;
+    private int stopSheetRow = 0;
+    private boolean isPeresmenka = false ;
+    private final List<String> lessonNamesHaveGroups = new ArrayList<>();
 
     public List<StudentGroup> getStudentGroups() {
         return studentGroups;
@@ -39,7 +39,17 @@ public class ExcelParser {
     public ExcelParser() {
         studentGroups = new ArrayList<>();
         lessons = new ArrayList<>();
+        addLessonNamesHaveGroups();
         parse();
+    }
+
+    private void addLessonNamesHaveGroups() {
+        lessonNamesHaveGroups.add("Родной язык");
+        lessonNamesHaveGroups.add("Иностранный язык");
+    }
+
+    private boolean isLessonHaveGroups(String lessonName) {
+        return lessonNamesHaveGroups.stream().anyMatch(l -> l.equals(lessonName));
     }
 
     public void parse() {
@@ -58,10 +68,15 @@ public class ExcelParser {
 
     private void getLessonsByGroup(int column, XSSFSheet sheet) {
         for (int c = column - 1; c < column; c++) {
-            int lessonNumber = 1;
-            for (int r = getStartRowIndex(sheet) + 1; r < getStopRowIndex(sheet) - 2; r++) {
+            DayOfWeek dayOfWeek = DayOfWeek.Monday;
+            for (int r = getStartRowIndex(sheet) + 1; r < getStopRowIndex(sheet); r++) {
                 Row row = sheet.getRow(r);
-                Lesson lesson = getLesson(row, column, lessonNumber);
+                String str = row.getCell(0).toString().trim();
+                if (!str.equals("")) {
+                    dayOfWeek = DayOfWeek.getDayOfWeekByString(str);
+                    System.out.println(dayOfWeek);
+                }
+                Lesson lesson = getLesson(row, column, dayOfWeek);
                 if (lesson != null) {
                     lessons.add(lesson);
                 }
@@ -73,6 +88,7 @@ public class ExcelParser {
         int startSheetColumn = getStartColumnIndex(sheet);
         int stopSheetColumn = getStopColumnIndex(sheet);
         startSheetRow = getStartRowIndex(sheet);
+        stopSheetRow = getStopRowIndex(sheet);
         Row row = sheet.getRow(startSheetRow);
         Thread.sleep(100);
         for (int column = startSheetColumn; column < stopSheetColumn; column += 3) {
@@ -85,56 +101,69 @@ public class ExcelParser {
                 groupNumber = Integer.parseInt(cellValue);
             int course = Integer.parseInt(Integer.toString(groupNumber).substring(0, 1));
             studentGroups.add(new StudentGroup(groupNumber, course));
+            System.out.println(groupNumber);
             getLessonsByGroup(column, sheet);
         }
     }
 
     private String getLessonName(Cell cell) {
-        String lessonName = cell.getStringCellValue();
+        String lessonName = cell.toString();
         if (lessonName.equals(""))
             return null;
         String[] split = lessonName.split("\n");
         if (split.length > 1) {
-            lessonName = split[0];
+            if (!isPeresmenka)
+                lessonName = split[0];
+            else lessonName = split[1];
         }
         if (lessonName.chars().anyMatch(c -> c == (int) '_')) {
-            return null;
+            if (lessonName.chars().mapToObj(c -> (char) c).anyMatch(Character::isLetter)) {
+                return lessonName.substring(0, lessonName.indexOf('_'));
+            } else return null;
         }
         return lessonName;
     }
 
-    private int getCabinet(Cell cell) {
-        int cabinet = -1;
+    private String getCabinet(Cell cell, String lessonName) {
         String cabinetStr = cell.toString();
+        if (cabinetStr == null)
+            return null;
+        if (cabinetStr.length() < 3)
+            return null;
         String[] split = cabinetStr.split("\n");
-        try {
-            if (split.length > 1) {
-                if (split[0].equals("с/з") || split[0].equals("точка кипения"))
-                    cabinet = 0;
-                else
-                    cabinet = (int) Math.floor(Float.parseFloat(split[1]));
-            } else
-                cabinet = (int) Math.floor(Float.parseFloat(cabinetStr));
-        } catch (Exception e) {
-            return -1;
+        if (split.length == 1) {
+            cabinetStr = split[0];
         }
-        return cabinet;
-//        if (cabinetStr.equals(""))
-//            return -1;
-//        if (cabinetStr.equals("с/з") || cabinetStr.equals("точка кипения"))
-//            return 0;
+        if (split.length == 2) {
+            if (isLessonHaveGroups(lessonName))
+                cabinetStr = cabinetStr;
+            else if (!isPeresmenka)
+                cabinetStr = split[0];
+            else cabinetStr = split[1];
+        }
+        if (cabinetStr.substring(cabinetStr.length() - 2, cabinetStr.length() - 1).equals("."))
+            return cabinetStr.substring(0, cabinetStr.length() - 2);
+        else
+            return cabinetStr;
     }
 
-    private Lesson getLesson(Row row, int column, int lessonNumber) {
+    private Lesson getLesson(Row row, int column, DayOfWeek dayOfWeek) {
         String lessonName = getLessonName(row.getCell(column));
-        int cabinet = getCabinet(row.getCell(column - 1));
-        if (lessonName == null || cabinet == -1)
+        if (lessonName == null)
             return null;
+        String cabinet = getCabinet(row.getCell(column - 1), lessonName);
         int number = getLessonNumber(row.getCell(1));
-        DayOfWeek dayOfWeek = DayOfWeek.getByRow(row.getRowNum(), startSheetRow);
         return new Lesson(studentGroups.get(studentGroups.size() - 1).getGroupId(),
                 dayOfWeek.getId(), lessonName, cabinet, number);
     }
+
+    private String getDayOfWeek(Row row) {
+        String value = row.getCell(0).toString().trim();
+        if (!value.equals(""))
+            return value;
+        else return null;
+    }
+
 
     private int getLessonNumber(Cell cell) {
         String cellValue = cell.toString();

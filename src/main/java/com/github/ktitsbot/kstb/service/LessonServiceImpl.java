@@ -29,7 +29,7 @@ public class LessonServiceImpl implements LessonService {
         for (Lesson lesson : lessons) {
             int lessonNumber = lesson.getLessonNumber();
             String lessonName = lesson.getLessonName();
-            int lessonCabinetNumber = lesson.getCabinetNumber();
+            String lessonCabinetNumber = lesson.getCabinetNumber();
             stringBuilder.append(lesson.getLessonNumber()).append(")").append(lessonName).append(" ").append(lessonCabinetNumber);
             stringBuilder.append("\n");
         }
