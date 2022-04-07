@@ -20,7 +20,7 @@ public class ExcelParser {
     private final List<Lesson> lessons;
     private int startSheetRow = 0;
     private int stopSheetRow = 0;
-    private boolean isPeresmenka = false ;
+    private boolean isPeresmenka = false;
     private final List<String> lessonNamesHaveGroups = new ArrayList<>();
 
     public List<StudentGroup> getStudentGroups() {
@@ -53,7 +53,7 @@ public class ExcelParser {
     }
 
     public void parse() {
-        try (Stream<Path> paths = Files.walk(Paths.get("C:\\Users\\123\\Desktop\\lessons"))) {
+        try (Stream<Path> paths = Files.walk(Paths.get("C:\\Users\\123\\Desktop\\ktits-telegrambot\\src\\main\\resources\\lessons"))) {
             List<Path> list = paths.filter(Files::isRegularFile).toList();
             for (Path path : list) {
                 XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(path.toString()));
@@ -74,7 +74,6 @@ public class ExcelParser {
                 String str = row.getCell(0).toString().trim();
                 if (!str.equals("")) {
                     dayOfWeek = DayOfWeek.getDayOfWeekByString(str);
-                    System.out.println(dayOfWeek);
                 }
                 Lesson lesson = getLesson(row, column, dayOfWeek);
                 if (lesson != null) {
@@ -101,7 +100,6 @@ public class ExcelParser {
                 groupNumber = Integer.parseInt(cellValue);
             int course = Integer.parseInt(Integer.toString(groupNumber).substring(0, 1));
             studentGroups.add(new StudentGroup(groupNumber, course));
-            System.out.println(groupNumber);
             getLessonsByGroup(column, sheet);
         }
     }

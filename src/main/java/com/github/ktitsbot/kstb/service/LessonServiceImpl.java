@@ -22,17 +22,4 @@ public class LessonServiceImpl implements LessonService {
     public List<Lesson> findLessons(int idDayOfWeek, int idGroup) {
         return lessonRepository.findByIdDayOfWikAndIdGroup(idDayOfWeek, idGroup);
     }
-
-    @Override
-    public String lessonsToString(List<Lesson> lessons) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Lesson lesson : lessons) {
-            int lessonNumber = lesson.getLessonNumber();
-            String lessonName = lesson.getLessonName();
-            String lessonCabinetNumber = lesson.getCabinetNumber();
-            stringBuilder.append(lesson.getLessonNumber()).append(")").append(lessonName).append(" ").append(lessonCabinetNumber);
-            stringBuilder.append("\n");
-        }
-        return "<b>" + stringBuilder.toString() + "</b>";
-    }
 }

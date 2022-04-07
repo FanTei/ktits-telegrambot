@@ -15,16 +15,12 @@ import java.util.List;
 
 public class SetDayCommand implements Command {
     private final SendBotMessageService sendBotMessageService;
-    private final LessonService lessonService;
     private final TelegramUserService telegramUserService;
-    private final StudentGroupService studentGroupService;
     private final String CALL_BACK_PREFIX = "dayOfWeek:";
 
-    public SetDayCommand(SendBotMessageService sendBotMessageService, LessonService lessonService, TelegramUserService telegramUserService, StudentGroupService studentGroupService) {
+    public SetDayCommand(SendBotMessageService sendBotMessageService,TelegramUserService telegramUserService) {
         this.sendBotMessageService = sendBotMessageService;
-        this.lessonService = lessonService;
         this.telegramUserService = telegramUserService;
-        this.studentGroupService = studentGroupService;
     }
     @Override
     public void execute(Update update) {

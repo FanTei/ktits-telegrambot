@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface LessonService {
     List<Lesson> findLessons(int idDayOfWik, int idGroup);
-    String lessonsToString(List<Lesson> lessons);
 }

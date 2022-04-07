@@ -16,7 +16,6 @@ public class StudentGroupServiceImpl implements StudentGroupService {
         this.studentGroupRepository = studentGroupRepository;
     }
 
-
     @Override
     public List<StudentGroup> getAllStudentGroups() {
         return studentGroupRepository.findAll();

@@ -31,7 +31,6 @@ public class ExcelApplication implements CommandLineRunner {
         List<Lesson> lessons = excelParser.getLessons().stream().filter(Objects::nonNull).toList();
         studentGroupRepository.saveAll(excelParser.getStudentGroups());
         lessonRepository.saveAll(lessons);
-        System.out.println("Все");
         excelParser.clearLists();
     }
 }

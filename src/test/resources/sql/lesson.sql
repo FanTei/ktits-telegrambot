@@ -1,0 +1,7 @@
+INSERT INTO lesson(0,0,"test1","test1",2)
+INSERT INTO lesson(0,0,"test2","test2",2)
+INSERT INTO lesson(0,0,"test3","test3",2)
+INSERT INTO lesson(5,0,"test4","test4",2)
+INSERT INTO lesson(0,4,"test5","test5",2)
+INSERT INTO lesson(1,0,"test6","test6",2)
+INSERT INTO lesson(0,1,"test7","test7",2)

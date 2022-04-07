@@ -17,7 +17,7 @@ public class CommandContainer {
                 .put(CommandName.STOP.getCommandName(), new StopCommand(sendBotMessageService, telegramUserService))
                 .put(CommandName.STAT.getCommandName(), new StatCommand(sendBotMessageService, telegramUserService))
                 .put(CommandName.GROUP.getCommandName(), new SetCourseAndGroupCommand(sendBotMessageService, telegramUserService))
-                .put(CommandName.DAY.getCommandName(), new SetDayCommand(sendBotMessageService, lessonService, telegramUserService, studentGroupService)).build();
+                .put(CommandName.DAY.getCommandName(), new SetDayCommand(sendBotMessageService, telegramUserService)).build();
         unknownCommand = new UnknownCommand(sendBotMessageService);
     }
 

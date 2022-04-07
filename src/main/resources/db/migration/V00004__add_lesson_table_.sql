@@ -8,5 +8,5 @@ CREATE TABLE lesson
     lesson_cabinet varchar(100),
     lesson_number  int
 );
-TRUNCATE TABLE student_group;
+TRUNCATE TABLE lesson;
 
