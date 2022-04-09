@@ -35,6 +35,7 @@ public class KtitsTelegramBot extends TelegramLongPollingBot {
         lessonService = new LessonServiceImpl(excelApplication.getLessonRepository());
         this.commandContainer = new CommandContainer(sendBotMessageService, telegramUserService, lessonService, studentGroupService);
         this.callBackHandler = new CallBackHandler(sendBotMessageService, telegramUserService, lessonService, studentGroupService);
+
     }
 
     public static String COMMAND_PREFIX = "/";

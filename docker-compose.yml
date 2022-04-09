@@ -7,8 +7,8 @@ services:
     build:
       context: .
     environment:
-      BOT_NAME: 'ffff50505050_bot'
-      BOT_TOKEN: '5240809296:AAG_JDxNL67GI4xYnNWt-_agGgJnILnSQC4'
+      BOT_NAME: 'KTITS_TIMETABLE_BOT'
+      BOT_TOKEN: '5180815459:AAH3izIYRWGFYfCh9CttU86VewweI_GXgIs'
       BOT_DB_USERNAME: 'prod_kstb_db_user'
       BOT_DB_PASSWORD: 'prod_kstb_db_password'
     restart: always
