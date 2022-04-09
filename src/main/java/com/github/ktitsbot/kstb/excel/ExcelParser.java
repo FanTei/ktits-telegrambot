@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.FileInputStream;
 import java.nio.file.Files;
@@ -20,6 +21,7 @@ public class ExcelParser {
     private final List<Lesson> lessons;
     private int startSheetRow = 0;
     private int stopSheetRow = 0;
+    private final String path;
     private boolean isPeresmenka = false;
     private final List<String> lessonNamesHaveGroups = new ArrayList<>();
 
@@ -36,7 +38,8 @@ public class ExcelParser {
         lessons.clear();
     }
 
-    public ExcelParser() {
+    public ExcelParser(String path) {
+        this.path = path;
         studentGroups = new ArrayList<>();
         lessons = new ArrayList<>();
         addLessonNamesHaveGroups();
@@ -53,7 +56,9 @@ public class ExcelParser {
     }
 
     public void parse() {
-        try (Stream<Path> paths = Files.walk(Paths.get("C:\\Users\\123\\Desktop\\ktits-telegrambot\\src\\main\\resources\\lessons"))) {
+        System.out.println(path);
+        try (Stream<Path> paths = Files.walk(Paths.get(path))) {
+            System.out.println(paths);
             List<Path> list = paths.filter(Files::isRegularFile).toList();
             for (Path path : list) {
                 XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(path.toString()));
