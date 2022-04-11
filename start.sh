@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Pull new changes
-git pull
 
 # Prepare Jar
 mvn clean
@@ -13,7 +12,8 @@ docker-compose stop
 # Add environment variables
 export BOT_NAME=$1
 export BOT_TOKEN=$2
-export BOT_DB_USERNAME='prod_kstb_db_user'
+#'prod_kstb_db_user'
+export BOT_DB_USERNAME= 'prod_kstb_db_user'
 export BOT_DB_PASSWORD='kstb'
 
 # Start new deployment

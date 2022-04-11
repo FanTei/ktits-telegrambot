@@ -1,11 +1,12 @@
 package com.github.ktitsbot.kstb.service;
 
+import com.github.ktitsbot.kstb.excel.DayOfWeek;
 import com.github.ktitsbot.kstb.repository.LessonRepository;
 import com.github.ktitsbot.kstb.repository.entity.Lesson;
-import org.hibernate.usertype.LoggableUserType;
 import org.jvnet.hk2.annotations.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -18,7 +19,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public List<Lesson> findLessons(int idDayOfWik, int idGroup) {
-        return lessonRepository.findByIdDayOfWikAndIdGroup(idDayOfWik, idGroup);
+    public List<Lesson> findLessons(int idDayOfWeek, int idGroup) {
+        return lessonRepository.findByIdDayOfWikAndIdGroup(idDayOfWeek, idGroup);
     }
 }

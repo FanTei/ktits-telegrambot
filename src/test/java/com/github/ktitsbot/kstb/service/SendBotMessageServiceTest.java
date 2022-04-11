@@ -29,5 +29,4 @@ public class SendBotMessageServiceTest {
         sendBotMessageService.sendMessage(chatId,message);
         Mockito.verify(bot).execute(sendMessage);
     }
-
 }

@@ -5,10 +5,10 @@ services:
     image: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: '0520'
       MYSQL_DATABASE: 'dev_kstb_db'
-      MYSQL_USER: 'kstb_db'
-      MYSQL_PASSWORD: 'kstb'
+      MYSQL_USER: 'dev_kstb_db_user'
+      MYSQL_PASSWORD: 'dev_kstb_db_password'
+      MYSQL_ROOT_PASSWORD: '0520'
     ports:
       - "3308:3306"
     expose:

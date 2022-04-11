@@ -7,15 +7,23 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class ExcelParser {
     private final List<StudentGroup> studentGroups;
     private final List<Lesson> lessons;
     private int startSheetRow = 0;
+    private int stopSheetRow = 0;
+    private final String path;
+    private boolean isPeresmenka = false;
+    private final List<String> lessonNamesHaveGroups = new ArrayList<>();
 
     public List<StudentGroup> getStudentGroups() {
         return studentGroups;
@@ -25,17 +33,38 @@ public class ExcelParser {
         return lessons;
     }
 
-    public ExcelParser() {
+    public void clearLists() {
+        studentGroups.clear();
+        lessons.clear();
+    }
+
+    public ExcelParser(String path) {
+        this.path = path;
         studentGroups = new ArrayList<>();
         lessons = new ArrayList<>();
+        addLessonNamesHaveGroups();
         parse();
     }
 
+    private void addLessonNamesHaveGroups() {
+        lessonNamesHaveGroups.add("Родной язык");
+        lessonNamesHaveGroups.add("Иностранный язык");
+    }
+
+    private boolean isLessonHaveGroups(String lessonName) {
+        return lessonNamesHaveGroups.stream().anyMatch(l -> l.equals(lessonName));
+    }
+
     public void parse() {
-        try (FileInputStream inputStream = new FileInputStream("C:\\Users\\123\\Downloads\\test.xlsx")) {
-            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-            for (int i = 1; i < workbook.getNumberOfSheets(); i++) {
-                getGroups(workbook.getSheetAt(i));
+        System.out.println(path);
+        try (Stream<Path> paths = Files.walk(Paths.get(path))) {
+            System.out.println(paths);
+            List<Path> list = paths.filter(Files::isRegularFile).toList();
+            for (Path path : list) {
+                XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(path.toString()));
+                for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                    getGroups(workbook.getSheetAt(i));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -44,61 +73,107 @@ public class ExcelParser {
 
     private void getLessonsByGroup(int column, XSSFSheet sheet) {
         for (int c = column - 1; c < column; c++) {
-            int lessonNumber = 1 ;
-            for (int r = getStartRowIndex(sheet)+1; r < getStopRowIndex(sheet); r++) {
-                Lesson lesson = getLesson(sheet.getRow(r), column, lessonNumber);
+            DayOfWeek dayOfWeek = DayOfWeek.Monday;
+            for (int r = getStartRowIndex(sheet) + 1; r < getStopRowIndex(sheet); r++) {
+                Row row = sheet.getRow(r);
+                String str = row.getCell(0).toString().trim();
+                if (!str.equals("")) {
+                    dayOfWeek = DayOfWeek.getDayOfWeekByString(str);
+                }
+                Lesson lesson = getLesson(row, column, dayOfWeek);
                 if (lesson != null) {
                     lessons.add(lesson);
                 }
-                if (lessonNumber == 6)
-                    lessonNumber = 0;
-                lessonNumber++;
             }
         }
     }
 
-    private void getGroups(XSSFSheet sheet) {
+    private void getGroups(XSSFSheet sheet) throws InterruptedException {
         int startSheetColumn = getStartColumnIndex(sheet);
         int stopSheetColumn = getStopColumnIndex(sheet);
         startSheetRow = getStartRowIndex(sheet);
+        stopSheetRow = getStopRowIndex(sheet);
         Row row = sheet.getRow(startSheetRow);
+        Thread.sleep(100);
         for (int column = startSheetColumn; column < stopSheetColumn; column += 3) {
-            int groupNumber = Integer.parseInt(row.getCell(column).getStringCellValue().split("\n")[0].split(" ")[0]);
-            studentGroups.add(new StudentGroup(groupNumber));
+            String cellValue = row.getCell(column).getStringCellValue().split("\n")[0].split(" ")[0];
+            String[] split = cellValue.split("-");
+            int groupNumber;
+            if (split.length > 1)
+                groupNumber = (Integer.parseInt(split[0]));
+            else
+                groupNumber = Integer.parseInt(cellValue);
+            int course = Integer.parseInt(Integer.toString(groupNumber).substring(0, 1));
+            studentGroups.add(new StudentGroup(groupNumber, course));
             getLessonsByGroup(column, sheet);
         }
     }
 
     private String getLessonName(Cell cell) {
-        String lessonName = cell.getStringCellValue();
-        String[] split = lessonName.split("\n");
-        if (split.length > 1)
-            return split[1];
+        String lessonName = cell.toString();
         if (lessonName.equals(""))
             return null;
-        else
-            return lessonName;
+        String[] split = lessonName.split("\n");
+        if (split.length > 1) {
+            if (!isPeresmenka)
+                lessonName = split[0];
+            else lessonName = split[1];
+        }
+        if (lessonName.chars().anyMatch(c -> c == (int) '_')) {
+            if (lessonName.chars().mapToObj(c -> (char) c).anyMatch(Character::isLetter)) {
+                return lessonName.substring(0, lessonName.indexOf('_'));
+            } else return null;
+        }
+        return lessonName;
     }
 
-    private int getCabinet(Cell cell) {
+    private String getCabinet(Cell cell, String lessonName) {
         String cabinetStr = cell.toString();
-        if (cabinetStr.equals(""))
-            return -1;
-        if (cabinetStr.equals("с/з"))
-            return 0;
+        if (cabinetStr == null)
+            return null;
+        if (cabinetStr.length() < 3)
+            return null;
         String[] split = cabinetStr.split("\n");
-        if (split.length > 1)
-            return (int) Math.floor(Float.parseFloat(split[1]));
-        return (int) Math.floor(Float.parseFloat(cabinetStr));
+        if (split.length == 1) {
+            cabinetStr = split[0];
+        }
+        if (split.length == 2) {
+            if (isLessonHaveGroups(lessonName))
+                cabinetStr = cabinetStr;
+            else if (!isPeresmenka)
+                cabinetStr = split[0];
+            else cabinetStr = split[1];
+        }
+        if (cabinetStr.substring(cabinetStr.length() - 2, cabinetStr.length() - 1).equals("."))
+            return cabinetStr.substring(0, cabinetStr.length() - 2);
+        else
+            return cabinetStr;
     }
-    private Lesson getLesson(Row row, int column, int lessonNumber) {
+
+    private Lesson getLesson(Row row, int column, DayOfWeek dayOfWeek) {
         String lessonName = getLessonName(row.getCell(column));
         if (lessonName == null)
             return null;
-        int cabinet = getCabinet(row.getCell(column - 1));
-        DayOfWeek dayOfWeek = DayOfWeek.getDayOfWeekByRow(row.getRowNum(), startSheetRow);
+        String cabinet = getCabinet(row.getCell(column - 1), lessonName);
+        int number = getLessonNumber(row.getCell(1));
         return new Lesson(studentGroups.get(studentGroups.size() - 1).getGroupId(),
-                dayOfWeek.getId(), lessonName, cabinet, lessonNumber);
+                dayOfWeek.getId(), lessonName, cabinet, number);
+    }
+
+    private String getDayOfWeek(Row row) {
+        String value = row.getCell(0).toString().trim();
+        if (!value.equals(""))
+            return value;
+        else return null;
+    }
+
+
+    private int getLessonNumber(Cell cell) {
+        String cellValue = cell.toString();
+        if (!cellValue.equals("")) {
+            return Integer.parseInt(cellValue.substring(0, 1));
+        }
+        return -100;
     }
 
     private int getStartRowIndex(Sheet sheet) {

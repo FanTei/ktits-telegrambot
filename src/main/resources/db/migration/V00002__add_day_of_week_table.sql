@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS day_of_week;
 CREATE TABLE day_of_week
 (
     Id       int,

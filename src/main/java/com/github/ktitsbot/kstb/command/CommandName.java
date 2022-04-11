@@ -3,11 +3,10 @@ package com.github.ktitsbot.kstb.command;
 public enum CommandName {
     START("/start"),
     STOP("/stop"),
-    HELP("/help"),
     NO("/no"),
     STAT("/stat"),
-    GROUP("/group"),
-    DAY("/day");
+    GROUP("\uD83C\uDD95Выбор группы"),
+    DAY("\uD83D\uDCC5Выбор дня");
     private final String commandName;
 
     CommandName(String commandName) {

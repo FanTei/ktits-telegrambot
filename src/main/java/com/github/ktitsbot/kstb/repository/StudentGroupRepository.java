@@ -9,5 +9,4 @@ import java.util.Map;
 
 @Repository
 public interface StudentGroupRepository extends JpaRepository<StudentGroup,Integer> {
-
 }

@@ -4,12 +4,17 @@ import com.github.ktitsbot.kstb.repository.entity.TelegramUser;
 import com.github.ktitsbot.kstb.service.SendBotMessageService;
 import com.github.ktitsbot.kstb.service.TelegramUserService;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StartCommand implements Command {
     private final SendBotMessageService sendBotMessageService;
     private final TelegramUserService telegramUserService;
-    public final static String START_MESSAGE = "Привет. Я Ktits Telegram Bot. Я помогу тебе с расписание " +
-            "Я еще маленький и только учусь.";
+    public final static String START_MESSAGE = "Привет. Я Ktits Telegram Bot. Я помогу тебе с расписание.";
 
     public StartCommand(SendBotMessageService sendBotMessageService, TelegramUserService telegramUserService) {
         this.sendBotMessageService = sendBotMessageService;
@@ -19,7 +24,6 @@ public class StartCommand implements Command {
     @Override
     public void execute(Update update) {
         String chatId = update.getMessage().getChatId().toString();
-
         telegramUserService.findByChatId(chatId).ifPresentOrElse(
                 telegramUser -> {
                     telegramUser.setActive(true);
@@ -34,6 +38,14 @@ public class StartCommand implements Command {
                     telegramUserService.save(telegramUser);
 
                 });
-        sendBotMessageService.sendMessage(update.getMessage().getChatId().toString(), START_MESSAGE);
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> rows = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        row.add("\uD83C\uDD95Выбор группы");
+        row.add("\uD83D\uDCC5Выбор дня");
+        rows.add(row);
+        replyKeyboardMarkup.setKeyboard(rows);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        sendBotMessageService.sendMessage(update.getMessage().getChatId().toString(), START_MESSAGE,replyKeyboardMarkup);
     }
 }
