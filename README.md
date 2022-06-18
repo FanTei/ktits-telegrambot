@@ -1,28 +1,27 @@
-# ktits-telgrambot
-Bot for viewing the schedule
+## Description
 
-Overview — Bot for getting students timetable
+A tutorial project written with Spring. The main goal is to send out the schedule of the educational institution
 
-Usage — как использовать проект;
+## Java version
 
-Building — как запустить проект, что для этого нужно;
+* Java 17
 
-Troubleshooting — здесь описывается то, с какими проблемами можно столкнуться и как их решить;
+## Configuration:
 
-Authors — FanTei;
+* `spring.datasource.url` - production database address
+* `spring.datasource.username` - username for database
+* `spring.datasource.password` - password for database
+* `server.port` - port which will be used by application(4000 by default)
+* `spring.datasource.url` - development database address
+* `bot.username` - telegram bot name
+* `bot.token` - telegram bot token
+* `lessons.directory=/home/lessons/` - scheduling directories
 
-RELEASE_NOTES — файл, в котором записываются все изменения для новых версий. Хорошая практика вынести это в отдельный документ, а в README хранить ссылку для перехода;
 
-## Deployment
-Deployment process as easy as possible:
-Required software:
-- terminal for running bash scripts
-- docker
-- docker-compose
+## Launch
 
-to deploy application, switch to needed branch and run bash script:
-
-$ bash start.sh ${bot_username} ${bot_token}
-
-That's all.
-
+```sh
+git clone https://github.com/FanTei/ktits-telegrambot.git project
+cd project
+make run
+```
