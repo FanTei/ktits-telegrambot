@@ -1,6 +1,6 @@
 ## Description
 
-A tutorial project written with Spring. The main goal is to send out the schedule of the educational institution
+Bot for mailing class schedules
 
 ## Java version
 
